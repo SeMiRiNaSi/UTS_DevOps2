@@ -5,63 +5,235 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>1Money</title>
   <style>
-    :root { --bg:#f5f7fb; --card:#fff; --ink:#1d2433; --muted:#667085; --line:#e4e7ec; --brand:#2f5bea; --in:#12805c; --out:#c4320a; }
+    :root {
+      --bg:#f5f7fb;
+      --card:#fff;
+      --ink:#1d2433;
+      --muted:#667085;
+      --line:#e4e7ec;
+      --brand:#2f5bea;
+      --brand-dark:#2447c8;
+      --in:#12805c;
+      --out:#c4320a;
+    }
+
     * { box-sizing: border-box; }
-    body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--bg); color:var(--ink); }
-    main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
-    h1 { margin: 0 0 4px; font-size: 1.5rem; }
-    .sub { color: var(--muted); margin: 0 0 20px; font-size: .9rem; }
-    .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-    .saldo { font-size: 2rem; font-weight: 700; }
-    form.tambah { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    form.tambah .full { grid-column: 1 / -1; }
-    label { font-size: .8rem; color: var(--muted); display:block; margin-bottom: 4px; }
-    input, select { width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 8px; font: inherit; }
-    button { padding: 10px 14px; border: 0; border-radius: 8px; background: var(--brand); color: #fff; font: inherit; cursor: pointer; }
-    button.hapus { background: transparent; color: var(--out); padding: 4px 8px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { text-align: left; padding: 10px 6px; border-bottom: 1px solid var(--line); font-size: .92rem; }
-    td.num, th.num { text-align: right; white-space: nowrap; }
-    .masuk { color: var(--in); } .keluar { color: var(--out); }
-    .err { color: var(--out); margin-bottom: 8px; }
-    footer { color: var(--muted); font-size: .8rem; text-align: center; margin-top: 24px; }
+
+    body {
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+    }
+
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 1.5rem;
+      color: var(--brand);
+      font-weight: 750;
+    }
+
+    .sub {
+      color: var(--muted);
+      margin: 0 0 20px;
+      font-size: .9rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .saldo {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #243b7a;
+    }
+
+    form.tambah {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    form.tambah .full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: .8rem;
+      color: var(--brand-dark);
+      display:block;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font: inherit;
+      background: #fff;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px rgba(47, 91, 234, 0.10);
+    }
+
+    button {
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--brand);
+      color: #fff;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: var(--brand-dark);
+    }
+
+    button.hapus {
+      background: transparent;
+      color: var(--out);
+      padding: 4px 8px;
+    }
+
+    button.hapus:hover {
+      background: #fff1ed;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 6px;
+      border-bottom: 1px solid var(--line);
+      font-size: .92rem;
+    }
+
+    th {
+      color: var(--brand-dark);
+      font-weight: 650;
+    }
+
+    td.num, th.num {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .masuk {
+      color: var(--in);
+      font-weight: 600;
+    }
+
+    .keluar {
+      color: var(--out);
+      font-weight: 600;
+    }
+
+    .err {
+      color: var(--out);
+      margin-bottom: 8px;
+    }
+
+    footer {
+      color: var(--muted);
+      font-size: .8rem;
+      text-align: center;
+      margin-top: 24px;
+    }
   </style>
 </head>
+
 <body>
 <main>
   <h1>1Money</h1>
   <p class="sub">Pencatatan kas organisasi mahasiswa</p>
 
   <div class="card">
-    <div class="sub" style="margin:0">Saldo saat ini</div>
+    <div class="sub" style="margin:0; color:#667085">Saldo saat ini</div>
     <div class="saldo">Rp {{ "{:,}".format(saldo).replace(",", ".") }}</div>
   </div>
 
   <div class="card">
     {% if error %}<div class="err">{{ error }}</div>{% endif %}
+
     <form class="tambah" method="post" action="{{ url_for('tambah') }}">
-      <div><label for="tanggal">Tanggal</label><input id="tanggal" name="tanggal" type="date" value="{{ hari_ini }}"></div>
-      <div><label for="jenis">Jenis</label>
-        <select id="jenis" name="jenis"><option value="masuk">Pemasukan</option><option value="keluar">Pengeluaran</option></select></div>
-      <div class="full"><label for="keterangan">Keterangan</label><input id="keterangan" name="keterangan" required placeholder="Contoh: Iuran kas bulan November"></div>
-      <div><label for="jumlah">Jumlah (Rp)</label><input id="jumlah" name="jumlah" type="number" min="1" required></div>
-      <div style="align-self:end"><button type="submit">Simpan</button></div>
+      <div>
+        <label for="tanggal">Tanggal</label>
+        <input id="tanggal" name="tanggal" type="date" value="{{ hari_ini }}">
+      </div>
+
+      <div>
+        <label for="jenis">Jenis</label>
+        <select id="jenis" name="jenis">
+          <option value="masuk">Pemasukan</option>
+          <option value="keluar">Pengeluaran</option>
+        </select>
+      </div>
+
+      <div class="full">
+        <label for="keterangan">Keterangan</label>
+        <input id="keterangan" name="keterangan" required placeholder="Contoh: Iuran kas bulan November">
+      </div>
+
+      <div>
+        <label for="jumlah">Jumlah (Rp)</label>
+        <input id="jumlah" name="jumlah" type="number" min="1" required>
+      </div>
+
+      <div style="align-self:end">
+        <button type="submit">Simpan</button>
+      </div>
     </form>
   </div>
 
   <div class="card">
     <table>
-      <thead><tr><th>Tanggal</th><th>Keterangan</th><th class="num">Jumlah</th><th></th></tr></thead>
+      <thead>
+        <tr>
+          <th>Tanggal</th>
+          <th>Keterangan</th>
+          <th class="num">Jumlah</th>
+          <th></th>
+        </tr>
+      </thead>
+
       <tbody>
       {% for t in transaksi %}
         <tr>
           <td>{{ t.tanggal }}</td>
           <td>{{ t.keterangan }}</td>
-          <td class="num {{ t.jenis }}">{{ "+" if t.jenis == "masuk" else "-" }}{{ "{:,}".format(t.jumlah).replace(",", ".") }}</td>
-          <td class="num"><form method="post" action="{{ url_for('hapus', trx_id=t.id) }}"><button class="hapus" title="Hapus">Hapus</button></form></td>
+          <td class="num {{ t.jenis }}">
+            {{ "+" if t.jenis == "masuk" else "-" }}{{ "{:,}".format(t.jumlah).replace(",", ".") }}
+          </td>
+          <td class="num">
+            <form method="post" action="{{ url_for('hapus', trx_id=t.id) }}">
+              <button class="hapus" title="Hapus">Hapus</button>
+            </form>
+          </td>
         </tr>
       {% else %}
-        <tr><td colspan="4" style="color:var(--muted)">Belum ada transaksi.</td></tr>
+        <tr>
+          <td colspan="4" style="color:var(--muted)">Belum ada transaksi.</td>
+        </tr>
       {% endfor %}
       </tbody>
     </table>
