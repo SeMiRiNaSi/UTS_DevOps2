@@ -8,6 +8,7 @@ from datetime import date
 
 from flask import Flask, g, jsonify, redirect, render_template, request, url_for
 
+
 SKEMA = """
 CREATE TABLE IF NOT EXISTS transaksi (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -17,6 +18,7 @@ CREATE TABLE IF NOT EXISTS transaksi (
     jumlah INTEGER NOT NULL CHECK (jumlah > 0)
 );
 """
+
 
 def create_app(db_path=None):
     app = Flask(__name__)
@@ -99,19 +101,18 @@ def create_app(db_path=None):
         rows = get_db().execute("SELECT * FROM transaksi ORDER BY id").fetchall()
         return jsonify([dict(r) for r in rows])
 
-    # ==========================================
-    # FITUR BARU: DASHBOARD RINGKASAN SALDO
-    # ==========================================
     @app.route("/dashboard")
     def dashboard():
         db = get_db()
-        
-        # Hitung total pemasukan
-        row_masuk = db.execute("SELECT COALESCE(SUM(jumlah), 0) as total FROM transaksi WHERE jenis='masuk'").fetchone()
+
+        # Hitung total pemasukan (kueri dipisah agar tidak kepanjangan)
+        query_masuk = "SELECT COALESCE(SUM(jumlah), 0) as total FROM transaksi WHERE jenis='masuk'"
+        row_masuk = db.execute(query_masuk).fetchone()
         total_masuk = row_masuk["total"]
-        
+
         # Hitung total pengeluaran
-        row_keluar = db.execute("SELECT COALESCE(SUM(jumlah), 0) as total FROM transaksi WHERE jenis='keluar'").fetchone()
+        query_keluar = "SELECT COALESCE(SUM(jumlah), 0) as total FROM transaksi WHERE jenis='keluar'"
+        row_keluar = db.execute(query_keluar).fetchone()
         total_keluar = row_keluar["total"]
 
         # Hitung saldo berdasarkan total pemasukan dikurangi total pengeluaran.
@@ -124,9 +125,10 @@ def create_app(db_path=None):
             saldo=saldo,
             versi=app.config["APP_VERSION"]
         )
-    # ==========================================
 
     return app
 
+
 if __name__ == "__main__":
     create_app().run(host="0.0.0.0", port=8000)
+    
