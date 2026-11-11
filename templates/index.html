@@ -59,25 +59,6 @@
       color: #243b7a;
     }
 
-    /* Style tambahan untuk link/tombol dashboard */
-    .btn-dashboard {
-      display: inline-block;
-      margin-top: 12px;
-      padding: 8px 12px;
-      background-color: var(--bg);
-      color: var(--brand);
-      text-decoration: none;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .btn-dashboard:hover {
-      background-color: var(--line);
-      color: var(--brand-dark);
-    }
-
     form.tambah {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -189,9 +170,6 @@
   <div class="card">
     <div class="sub" style="margin:0; color:#667085">Saldo saat ini</div>
     <div class="saldo">Rp {{ "{:,}".format(saldo).replace(",", ".") }}</div>
-    
-    <!-- Tombol menuju halaman dashboard -->
-    <a href="/dashboard" class="btn-dashboard">Lihat Ringkasan Dashboard &rarr;</a>
   </div>
 
   <div class="card">
