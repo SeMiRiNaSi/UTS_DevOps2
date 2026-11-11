@@ -123,60 +123,45 @@ jobs:
 
 
   # ---------------------------------------------------------------
-  # CD 2: deploy otomatis dengan Podman
+  # CD 2: deploy otomatis memakai Podman pada runner self-hosted
   # ---------------------------------------------------------------
   deploy:
     name: Deploy dengan Podman
     runs-on: [self-hosted, linux, podman]
     needs: publish
-
     permissions:
       contents: read
       packages: read
-
     steps:
       - name: Login ke GHCR
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io \
-            -u "${{ github.actor }}" \
-            --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u "${{ github.actor }}" --password-stdin
 
       - name: Pull image terbaru
-        run: |
-          podman pull ${{ needs.publish.outputs.image }}:latest
+        run: podman pull ${{ needs.publish.outputs.image }}:latest
 
-      - name: Ganti container lama dengan yang baru
+      - name: Ganti container lama dengan yang baru secara otomatis
         run: |
-          podman rm -f 1money || true
-
+          echo "Menjalankan kontainer baru (otomatis melindas yang lama)..."
           podman run -d \
+            --replace \
             --name 1money \
-            --network podman \
-            -p 8080:8000 \
+            --network host \
             -v 1money-data:/data:Z \
             ${{ needs.publish.outputs.image }}:latest
 
-      - name: Health check
+      - name: Health check otomatis
         run: |
-          echo "Menunggu aplikasi 1Money..."
           sleep 5
-
           for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:8080/health >/dev/null 2>&1; then
-              echo "=================================="
-              echo "1Money berhasil berjalan!"
-              echo "=================================="
+            if curl -fsS http://localhost:8000/health >/dev/null 2>&1; then
+              echo "Container 1money berhasil berjalan dan sehat di port 8000!"
               exit 0
             fi
-
-            echo "Menunggu aplikasi... percobaan $i/30"
-            sleep 2
+            echo "Menunggu aplikasi 1money di port 8000 (percobaan $i/30)..."
+            sleep 3
           done
-
-          echo "=== STATUS CONTAINER ==="
+          echo "=== STATUS CONTAINER SAAT GAGAL ==="
           podman ps -a
-
-          echo "=== LOG CONTAINER ==="
+          echo "=== LOG ERROR CONTAINER ==="
           podman logs 1money
-
           exit 1
