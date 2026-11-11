@@ -113,16 +113,15 @@ def create_app(db_path=None):
         # Hitung total pengeluaran
         row_keluar = db.execute("SELECT COALESCE(SUM(jumlah), 0) as total FROM transaksi WHERE jenis='keluar'").fetchone()
         total_keluar = row_keluar["total"]
-        
-        # 🐛 BUG SENGAJA UNTUK DEVOPS 🐛
-        # Logika salah: Saldo dihitung dengan menambahkan pengeluaran, bukan mengurangkannya.
-        saldo_bug = total_masuk + total_keluar 
-        
+
+        # Hitung saldo berdasarkan total pemasukan dikurangi total pengeluaran.
+        saldo = total_masuk - total_keluar
+
         return render_template(
             "dashboard.html",
             masuk=total_masuk,
             keluar=total_keluar,
-            saldo=saldo_bug,
+            saldo=saldo,
             versi=app.config["APP_VERSION"]
         )
     # ==========================================
