@@ -8,6 +8,7 @@ from datetime import date
 
 from flask import Flask, g, jsonify, redirect, render_template, request, url_for
 
+
 SKEMA = """
 CREATE TABLE IF NOT EXISTS transaksi (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -130,7 +131,6 @@ def create_app(db_path=None):
             saldo=saldo,
             versi=app.config["APP_VERSION"]
         )
-    # ==========================================
 
     return app
 
