@@ -116,7 +116,7 @@ def create_app(db_path=None):
         total_keluar = row_keluar["total"]
 
         # 🐛 BUG SENGAJA UNTUK DEVOPS 🐛
-        saldo_bug = total_masuk + total_keluar 
+        saldo_bug = total_masuk + total_keluar
 
         return render_template(
             "dashboard.html",
