@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS transaksi (
 );
 """
 
+
 def create_app(db_path=None):
     app = Flask(__name__)
     app.config["DB_PATH"] = db_path or os.environ.get("DB_PATH", "kas.db")
@@ -102,16 +103,21 @@ def create_app(db_path=None):
     # ==========================================
     # FITUR BARU: DASHBOARD RINGKASAN SALDO
     # ==========================================
+
     @app.route("/dashboard")
     def dashboard():
         db = get_db()
-        
+
         # Hitung total pemasukan
-        row_masuk = db.execute("SELECT COALESCE(SUM(jumlah), 0) as total FROM transaksi WHERE jenis='masuk'").fetchone()
+        row_masuk = db.execute(
+            "SELECT COALESCE(SUM(jumlah), 0) as total FROM transaksi WHERE jenis='masuk'"
+        ).fetchone()
         total_masuk = row_masuk["total"]
-        
+
         # Hitung total pengeluaran
-        row_keluar = db.execute("SELECT COALESCE(SUM(jumlah), 0) as total FROM transaksi WHERE jenis='keluar'").fetchone()
+        row_keluar = db.execute(
+            "SELECT COALESCE(SUM(jumlah), 0) as total FROM transaksi WHERE jenis='keluar'"
+        ).fetchone()
         total_keluar = row_keluar["total"]
 
         # Hitung saldo berdasarkan total pemasukan dikurangi total pengeluaran.
@@ -127,6 +133,7 @@ def create_app(db_path=None):
     # ==========================================
 
     return app
+
 
 if __name__ == "__main__":
     create_app().run(host="0.0.0.0", port=8000)
