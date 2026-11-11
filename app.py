@@ -101,28 +101,34 @@ def create_app(db_path=None):
         rows = get_db().execute("SELECT * FROM transaksi ORDER BY id").fetchall()
         return jsonify([dict(r) for r in rows])
 
+    # ==========================================
+    # FITUR BARU: DASHBOARD RINGKASAN SALDO
+    # ==========================================
+
     @app.route("/dashboard")
     def dashboard():
         db = get_db()
 
-        # Hitung total pemasukan (kueri dipisah agar tidak kepanjangan)
-        query_masuk = "SELECT COALESCE(SUM(jumlah), 0) as total FROM transaksi WHERE jenis='masuk'"
-        row_masuk = db.execute(query_masuk).fetchone()
+        # Hitung total pemasukan
+        row_masuk = db.execute(
+            "SELECT COALESCE(SUM(jumlah), 0) as total FROM transaksi WHERE jenis='masuk'"
+        ).fetchone()
         total_masuk = row_masuk["total"]
 
         # Hitung total pengeluaran
-        query_keluar = "SELECT COALESCE(SUM(jumlah), 0) as total FROM transaksi WHERE jenis='keluar'"
-        row_keluar = db.execute(query_keluar).fetchone()
+        row_keluar = db.execute(
+            "SELECT COALESCE(SUM(jumlah), 0) as total FROM transaksi WHERE jenis='keluar'"
+        ).fetchone()
         total_keluar = row_keluar["total"]
 
-        # 🐛 BUG SENGAJA UNTUK DEVOPS 🐛
-        saldo_bug = total_masuk + total_keluar
+        # Hitung saldo berdasarkan total pemasukan dikurangi total pengeluaran.
+        saldo = total_masuk - total_keluar
 
         return render_template(
             "dashboard.html",
             masuk=total_masuk,
             keluar=total_keluar,
-            saldo=saldo_bug,
+            saldo=saldo,
             versi=app.config["APP_VERSION"]
         )
 
